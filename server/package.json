@@ -1,0 +1,17 @@
+{
+  "name": "internet-of-tings",
+  "version": "1.0.0",
+  "description": "Embedded Systems Coursework 1",
+  "main": "app.js",
+  "dependencies": {
+    "express": "*",
+    "mongoose": "*",
+    "mqtt": "^2.18.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Internet of Tings",
+  "license": "ISC"
+}
