@@ -3,12 +3,20 @@ import os
 import sys
 import as7262
 import smbus
+import paho.mqtt.client as mqtt
+import json
+import datetime
 
 MAX_VALUE = 14000.0
 BAR_WIDTH = 25
 
 ##########
 
+client = mqtt.Client()
+client.tls_set(ca_certs="mqtt_encryption/mosquitto.org.crt", certfile="mqtt_encryption/client.crt", keyfile="mqtt_encryption/client.key")
+client.connect("test.mosquitto.org", port=8884)
+
+##########
 as7262.soft_reset()
 as7262.set_gain(64)
 as7262.set_integration_time(17.857)
@@ -71,8 +79,21 @@ try:
         print('bar', values)
         print('humidity', humidity)
         print('temperature', temperature)
+        print('date', datetime.datetime.now())
         sys.stdout.flush()
         time.sleep(0.5)
+
+        message = json.dumps({"date":,
+        "red": values.red,
+        "orange": values.orange,
+        "yellow": values.yellow,
+        "green": values.green,
+        "blue": values.blue,
+        "violet": values.violet,
+        "humidity": humidity,
+        "temperature": temperature})
+
+        #client.publish("IC.embedded/internet_of_tings/test", message)
 
 except KeyboardInterrupt:
     as7262.set_measurement_mode(3)
