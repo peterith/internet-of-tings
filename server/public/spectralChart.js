@@ -1,29 +1,38 @@
 var measurementData;
 
-
 function updateChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=0) {
-  var ctx = document.getElementById('myChart').getContext('2d');
+  var ctx = document.getElementById('myChart').getContext('2d')
+  var gradientStroke = ctx.createLinearGradient(window.outerWidth, 0, 0, 0)
+  gradientStroke.addColorStop(1, '#EE82EE');
+  gradientStroke.addColorStop(0.8, '#0000FF');
+  gradientStroke.addColorStop(0.6, '#008000');
+  gradientStroke.addColorStop(0.4, '#FFFF00');
+  gradientStroke.addColorStop(0.2, '#FFA500');
+  gradientStroke.addColorStop(0, '#FF0000');
   var chart = new Chart(ctx, {
-      // The type of chart we want to create
-      type: 'line',
-
-      // The data for our dataset
-      data: {
-          labels: ['Violet', 'Blue', 'Green', 'Yellow', 'Orange', 'Red'],
-          datasets: [{
-              label: 'My First dataset',
-              backgroundColor: 'rgb(255, 99, 132)',
-              borderColor: 'rgb(255, 99, 132)',
-              data: [violet, blue, green, yellow, orange, red],
-          }]
+    type: 'line',
+    data: {
+      labels: ['Violet', 'Blue', 'Green', 'Yellow', 'Orange', 'Red'],
+      datasets: [{
+        backgroundColor: gradientStroke,
+        borderColor: gradientStroke,
+        data: [violet, blue, green, yellow, orange, red],
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        text: 'Spectral Data',
+        fontSize: 30
       },
-
-      // Configuration options go here
-      options: {}
-  });
+      legend: {
+        display: false
+      }
+    }
+  })
 }
 
-updateChart();
+updateChart()
 
 document.getElementById('spectralButton').addEventListener('click', () => {
   var year = document.getElementById('year').value

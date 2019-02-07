@@ -1,0 +1,19 @@
+body {
+  font-family: Arial;
+  color: #333;
+}
+
+h1 {
+  font-size: 40px;
+  text-align: center;
+  color: black;
+}
+
+h1::first-letter {
+  font-size: 60px;
+  color: red;
+}
+
+.footer {
+  font-size: 14px;
+}
