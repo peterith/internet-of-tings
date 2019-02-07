@@ -2,6 +2,7 @@ import time
 import os
 import sys
 import as7262
+import smbus
 
 MAX_VALUE = 14000.0
 BAR_WIDTH = 25
@@ -42,7 +43,7 @@ sys.stdout.flush()
 try:
     while True:
 
-        bus.write_byte(SI7021_BUS_ADDR, HUMIDITY_INSTRUCTION)
+        bus.write_byte(SI7021_BUS_ADDR, HUMIDITY_INST)
 
         time.sleep(0.3)
 
