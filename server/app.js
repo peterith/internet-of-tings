@@ -17,7 +17,7 @@ db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', () => console.log('Connection is open to database'))
 
 const measurementSchema = new mongoose.Schema({
-  date: Number,
+  date: Number, // 20190207112120
   red: Number,
   orange: Number,
   yellow: Number,
@@ -58,15 +58,16 @@ client.on('message', (topic, message) => {
 app.use(express.static('public'))
 
 app.get('/measurement', (req, res) => {
-  Measurement.findOne({date: req.query.date}, (err, measurement) => {
+  var timestamp = req.query.date * 1000000;
+  Measurement.find().where('date').gt(timestamp).lt(timestamp + 1000000).exec((err, measurement) => {
     if (err) {
       console.error(err)
-      res.send(null)
+      res.send({})
     } else {
-      console.log(measurement.date)
+      console.log(measurement)
       res.send(measurement)
     }
-  })
+  });
 })
 
 app.post('/water', (req, res) => {
