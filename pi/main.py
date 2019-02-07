@@ -72,12 +72,7 @@ try:
         temperature = ((data0 * 256 + data1) * 175.72 / 65536.0) - 46.85
 
         values = as7262.get_calibrated_values()
-        print('values:', values.red, values.orange, values.yellow, values.green, values.blue, values.violet)
-        print('humidity', humidity)
-        print('temperature', temperature)
-        print('date', datetime.datetime.now())
         sys.stdout.flush()
-        time.sleep(0.5)
 
         message = json.dumps({"date": datetime.datetime.now().strftime("%Y%m%d%H%M%S"),
         "red": values.red,
@@ -90,7 +85,9 @@ try:
         "temperature": temperature})
 
         print('message', message)
-        #client.publish("IC.embedded/internet_of_tings/test", message)
+        
+        client.publish("IC.embedded/internet_of_tings/test", message)
+        time.sleep(5)
 
 except KeyboardInterrupt:
     as7262.set_measurement_mode(3)
