@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const mqtt = require('mqtt')
+const path = require('path')
 
 const app = express()
 const port = 3000
@@ -8,27 +9,27 @@ const port = 3000
 const client = mqtt.connect('mqtt://test.mosquitto.org')
 var topic = 'IC.embedded/internet_of_tings/test'
 
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true});
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => console.log('Connection open to database!'));
+db.once('open', () => console.log('Connection is open to database'));
 
 const measurementSchema = new mongoose.Schema({
   date: Date,
   red: Number,
-  blue: Number,
+  orange: Number,
   yellow: Number,
   green: Number,
+  blue: Number,
   violet: Number,
-  orange: Number
 });
 
 const Measurement = mongoose.model('Measurement', measurementSchema);
 
 client.on('connect', () => {
   client.subscribe(topic)
-  console.log('client has subscribed successfully to topic ' + topic);
+  console.log('Client has subscribed successfully to topic ' + topic);
 })
 
 client.on('message', (topic, message) => {
@@ -43,7 +44,8 @@ client.on('message', (topic, message) => {
   });
 })
 
-//app.use(express.static('public'))
+app.use(express.static('public'))
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
   Measurement.findOne({date: new Date('2012-04-23T18:25:43.511Z')}, (err, measurement) => {
@@ -51,4 +53,11 @@ app.get('/', (req, res) => {
   })
 })
 
-app.listen(port, () => console.log('Example app listening on port '+ port))
+app.get('/data', (req, res) => {
+  Measurement.findOne({date: new Date(req.query.date)}, (err, measurement) => {
+    console.log(measurement.date)
+    res.send(measurement)
+  })
+})
+
+app.listen(port, () => console.log('Listening on port ' + port))

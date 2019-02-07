@@ -6,7 +6,7 @@
   "dependencies": {
     "express": "*",
     "mongoose": "*",
-    "mqtt": "^2.18.8"
+    "mqtt": "*"
   },
   "devDependencies": {},
   "scripts": {
