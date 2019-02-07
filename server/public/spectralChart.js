@@ -35,11 +35,19 @@ function updateSpectralChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=
 function updateWeatherChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=0) {
   var ctx = document.getElementById('weatherChart').getContext('2d')
   var chart = new Chart(ctx, {
-    type: 'line',
+    type: 'scatter',
     data: {
-      labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24'],
       datasets: [{
-        data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18, 19, 20, 21, 22, 23, 24],
+        data: [{
+          x: 10,
+          y: 20
+        }, {
+          x: 20,
+          y: 10
+        }, {
+          x: 30,
+          y: 20
+        }],
         fill: false
       }]
     },
