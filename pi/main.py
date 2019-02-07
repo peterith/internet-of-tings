@@ -3,16 +3,10 @@ import os
 import sys
 import as7262
 
-BAR_CHAR = u'\u2588'
-
-ANSI_COLOR_RED = '\x1b[31m'
-ANSI_COLOR_GREEN = '\x1b[32m'
-ANSI_COLOR_YELLOW = '\x1b[33m'
-ANSI_COLOR_BLUE = '\x1b[34m'
-ANSI_COLOR_MAGENTA = '\x1b[35m'
-
 MAX_VALUE = 14000.0
 BAR_WIDTH = 25
+
+##########
 
 as7262.soft_reset()
 as7262.set_gain(64)
@@ -20,10 +14,22 @@ as7262.set_integration_time(17.857)
 as7262.set_measurement_mode(2)
 as7262.set_illumination_led(1)
 
+##########
+
+SI7021_BUS_ADDR = 0x40
+HUMIDITY_INST = 0xF5
+TEMP_INST = 0xF3
+
+bus = smbus.SMBus(1)
+
+##########
+
 try:
     input = raw_input
 except NameError:
     pass
+
+##########
 
 input("Setting white point baseline.\n\nHold a white sheet of paper ~5cm in front of the sensor and press a key...\n")
 baseline = as7262.get_calibrated_values()
@@ -31,39 +37,42 @@ time.sleep(1)
 input("Baseline set. Press a key to continue...\n")
 sys.stdout.flush()
 
+##########
+
 try:
     while True:
+
+        bus.write_byte(SI7021_BUS_ADDR, HUMIDITY_INSTRUCTION)
+
+        time.sleep(0.3)
+
+        data0 = bus.read_byte(SI7021_BUS_ADDR)
+        data1 = bus.read_byte(SI7021_BUS_ADDR)
+
+        humidity = ((data0 * 256 + data1) * 125 / 65536.0) - 6
+
+        time.sleep(0.3)
+
+        bus.write_byte(SI7021_BUS_ADDR, TEMP_INST)
+
+        time.sleep(0.3)
+
+        data0 = bus.read_byte(SI7021_BUS_ADDR)
+        data1 = bus.read_byte(SI7021_BUS_ADDR)
+
+        temperature = ((data0 * 256 + data1) * 175.72 / 65536.0) - 46.85
+
         values = as7262.get_calibrated_values()
         print('values:', values.red, values.orange, values.yellow, values.green, values.blue, values.violet)
         values = [int(x/y*MAX_VALUE) for x,y in zip(list(values), list(baseline))]
         print('values_adjusted:', values)
         values = [int(min(value, MAX_VALUE) / MAX_VALUE * BAR_WIDTH) for value in values]
         print('bar', values)
-        red, orange, yellow, green, blue, violet = [(BAR_CHAR * value) + (' ' * (BAR_WIDTH - value)) for value in values]
-
-        sys.stdout.write('\x1b[0;1H')
-        sys.stdout.write(u"""       Spectrometer Bar Graph        
- ---------------------------------     
-|Red:    {}{}\x1b[0m|     
-|Orange: {}{}\x1b[0m|     
-|Yellow: {}{}\x1b[0m|     
-|Green:  {}{}\x1b[0m|     
-|Blue:   {}{}\x1b[0m|     
-|Violet: {}{}\x1b[0m|     
- ---------------------------------     
-                                 
-""".format(
-    ANSI_COLOR_RED, red,
-    ANSI_COLOR_YELLOW, orange,
-    ANSI_COLOR_YELLOW, yellow,
-    ANSI_COLOR_GREEN, green,
-    ANSI_COLOR_BLUE, blue,
-    ANSI_COLOR_MAGENTA, violet
-))
+        print('humidity', humidity)
+        print('temperature', temperature)
         sys.stdout.flush()
         time.sleep(0.5)
 
 except KeyboardInterrupt:
     as7262.set_measurement_mode(3)
     as7262.set_illumination_led(0)
-
