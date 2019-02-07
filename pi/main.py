@@ -73,17 +73,13 @@ try:
 
         values = as7262.get_calibrated_values()
         print('values:', values.red, values.orange, values.yellow, values.green, values.blue, values.violet)
-        values = [int(x/y*MAX_VALUE) for x,y in zip(list(values), list(baseline))]
-        print('values_adjusted:', values)
-        values = [int(min(value, MAX_VALUE) / MAX_VALUE * BAR_WIDTH) for value in values]
-        print('bar', values)
         print('humidity', humidity)
         print('temperature', temperature)
         print('date', datetime.datetime.now())
         sys.stdout.flush()
         time.sleep(0.5)
 
-        message = json.dumps({"date":,
+        message = json.dumps({"date": datetime.datetime.now().strftime("%Y%m%d%H%M%S"),
         "red": values.red,
         "orange": values.orange,
         "yellow": values.yellow,
@@ -93,6 +89,7 @@ try:
         "humidity": humidity,
         "temperature": temperature})
 
+        print('message', message)
         #client.publish("IC.embedded/internet_of_tings/test", message)
 
 except KeyboardInterrupt:
