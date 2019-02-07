@@ -1,7 +1,7 @@
 var measurementData;
 
-function updateChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=0) {
-  var ctx = document.getElementById('myChart').getContext('2d')
+function updateSpectralChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=0) {
+  var ctx = document.getElementById('spectralChart').getContext('2d')
   var gradientStroke = ctx.createLinearGradient(window.outerWidth, 0, 0, 0)
   gradientStroke.addColorStop(1, '#EE82EE');
   gradientStroke.addColorStop(0.8, '#0000FF');
@@ -22,7 +22,7 @@ function updateChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=0) {
     options: {
       title: {
         display: true,
-        text: 'Spectral Data',
+        text: 'Spectral Chart',
         fontSize: 30
       },
       legend: {
@@ -32,12 +32,37 @@ function updateChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=0) {
   })
 }
 
-updateChart()
+function updateWeatherChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=0) {
+  var ctx = document.getElementById('weatherChart').getContext('2d')
+  var chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24'],
+      datasets: [{
+        data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,18, 19, 20, 21, 22, 23, 24],
+        fill: false
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        text: 'Weather Chart',
+        fontSize: 30
+      },
+      legend: {
+        display: false
+      }
+    }
+  })
+}
+
+updateSpectralChart()
+updateWeatherChart()
 
 document.getElementById('spectralButton').addEventListener('click', () => {
-  var year = document.getElementById('year').value
-  var month = document.getElementById('month').value
-  var day = document.getElementById('day').value
+  var year = document.getElementById('spectralYear').value
+  var month = document.getElementById('spectralMonth').value
+  var day = document.getElementById('spectralDay').value
   var spectralSelect = document.getElementById('spectralSelect')
 
   var date = year + month + day
@@ -59,11 +84,23 @@ document.getElementById('spectralButton').addEventListener('click', () => {
 
 document.getElementById('spectralSelect').addEventListener('change', () => {
   data = measurementData[document.getElementById('spectralSelect').value]
-  updateChart(data['violet'], data['blue'], data['green'], data['yellow'], data['orange'], data['red']);
+  updateSpectralChart(data['violet'], data['blue'], data['green'], data['yellow'], data['orange'], data['red']);
 })
 
 document.getElementById('waterButton').addEventListener('click', () => {
   var http = new XMLHttpRequest()
   http.open( 'POST', 'http://localhost:3000/water', false)
   http.send(null)
+})
+
+document.getElementById('weatherButton').addEventListener('click', () => {
+  var year = document.getElementById('weatherYear').value
+  var month = document.getElementById('weatherMonth').value
+  var day = document.getElementById('weatherDay').value
+
+  var date = year + month + day
+  var http = new XMLHttpRequest()
+  http.open( 'GET', 'http://localhost:3000/measurement/?date=' + date, false)
+  http.send(null)
+
 })
