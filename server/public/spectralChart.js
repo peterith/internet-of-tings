@@ -25,8 +25,14 @@ updateChart();
 document.getElementById("spectralButton").addEventListener("click", () => {
   var spectralText = document.getElementById("spectralText")
   var http = new XMLHttpRequest()
-  http.open( "GET", "http://localhost:3000/data/?date=" + spectralText.value, false)
+  http.open( "GET", "http://localhost:3000/measurement/?date=" + spectralText.value, false)
   http.send(null)
   data = JSON.parse(http.responseText)
-  updateChart(data["violet"], data["blue"], data["green"], data["yellow"], data["orange"], data["red"]);
+  if (data)
+    updateChart(data["violet"], data["blue"], data["green"], data["yellow"], data["orange"], data["red"]);
+})
+
+document.getElementById("waterButton").addEventListener("click", () => {
+  var http = new XMLHttpRequest()
+  http.open( "POST", "http://localhost:3000/water", false)
 })

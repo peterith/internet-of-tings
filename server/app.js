@@ -7,57 +7,71 @@ const app = express()
 const port = 3000
 
 const client = mqtt.connect('mqtt://test.mosquitto.org')
-var topic = 'IC.embedded/internet_of_tings/test'
+const measurementTopic = 'IC.embedded/internet_of_tings/measurement'
+const waterTopic = 'IC.embedded/internet_of_tings/water'
 
-mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true})
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => console.log('Connection is open to database'));
+const db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'))
+db.once('open', () => console.log('Connection is open to database'))
 
 const measurementSchema = new mongoose.Schema({
-  date: Date,
+  date: Number,
   red: Number,
   orange: Number,
   yellow: Number,
   green: Number,
   blue: Number,
   violet: Number,
-});
+  humidity: Number,
+  temperature: Number
+})
 
-const Measurement = mongoose.model('Measurement', measurementSchema);
+const Measurement = mongoose.model('Measurement', measurementSchema)
 
 client.on('connect', () => {
-  client.subscribe(topic)
-  console.log('Client has subscribed successfully to topic ' + topic);
+  client.subscribe(measurementTopic)
+  client.subscribe(waterTopic)
+  console.log('Client has subscribed successfully to ' + measurementTopic)
+  console.log('Client has subscribed successfully to ' + waterTopic)
 })
 
 client.on('message', (topic, message) => {
-  var json = JSON.parse(message)
+  if (topic === measurementTopic) {
+    var json = JSON.parse(message)
+    var measurement = new Measurement(json)
+    console.log(measurement)
 
-  var measurement = new Measurement(json)
-  console.log(measurement)
-
-  measurement.save((err, measurement) => {
-  if (err) return console.error(err);
-  console.log(measurement._id + ' saved to database')
-  });
+    measurement.save((err, measurement) => {
+      if (err) {
+        console.error(err)
+      } else {
+        console.log(measurement._id + ' saved to database')
+      }
+    })
+  } else {
+    console.log(message.toString())
+  }
 })
 
 app.use(express.static('public'))
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-  Measurement.findOne({date: new Date('2012-04-23T18:25:43.511Z')}, (err, measurement) => {
-    console.log(measurement.date)
+app.get('/measurement', (req, res) => {
+  Measurement.findOne({date: req.query.date}, (err, measurement) => {
+    if (err) {
+      console.error(err)
+      res.send(null)
+    } else {
+      console.log(measurement.date)
+      res.send(measurement)
+    }
   })
 })
 
-app.get('/data', (req, res) => {
-  Measurement.findOne({date: new Date(req.query.date)}, (err, measurement) => {
-    console.log(measurement.date)
-    res.send(measurement)
-  })
+app.post('/water', (req, res) => {
+  client.publish(waterTopic, 'Water now!')
+  res.send(null)
 })
 
 app.listen(port, () => console.log('Listening on port ' + port))
