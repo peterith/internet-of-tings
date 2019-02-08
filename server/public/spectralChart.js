@@ -1,8 +1,8 @@
 var measurementData;
 
-function updateSpectralChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=0) {
+function updateSpectralChart(data=[]) {
   var ctx = document.getElementById('spectralChart').getContext('2d')
-  var gradientStroke = ctx.createLinearGradient(window.outerWidth, 0, 0, 0)
+  var gradientStroke = ctx.createLinearGradient(window.outerWidth - 100, 0, 0, 0)
   gradientStroke.addColorStop(1, '#EE82EE');
   gradientStroke.addColorStop(0.8, '#0000FF');
   gradientStroke.addColorStop(0.6, '#008000');
@@ -14,9 +14,11 @@ function updateSpectralChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=
     data: {
       labels: ['Violet', 'Blue', 'Green', 'Yellow', 'Orange', 'Red'],
       datasets: [{
+        label: "My First dataset",
         backgroundColor: gradientStroke,
         borderColor: gradientStroke,
-        data: [violet, blue, green, yellow, orange, red],
+        data: data,
+        pointRadius: 5
       }]
     },
     options: {
@@ -27,39 +29,87 @@ function updateSpectralChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=
       },
       legend: {
         display: false
+      },
+      scales: {
+        xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Wavelength',
+            fontSize: 16
+          }
+        }],
+        yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Intensity (arbitary unit)',
+            fontSize: 16
+          }
+        }]
       }
     }
   })
 }
 
-function updateWeatherChart(violet=0, blue=0, green=0, yellow=0, orange=0, red=0) {
+function updateWeatherChart(humidityData={}, temperatureData={}) {
+  var color = Chart.helpers.color;
   var ctx = document.getElementById('weatherChart').getContext('2d')
   var chart = new Chart(ctx, {
-    type: 'scatter',
+    type: 'line',
     data: {
       datasets: [{
-        data: [{
-          x: 10,
-          y: 20
-        }, {
-          x: 20,
-          y: 10
-        }, {
-          x: 30,
-          y: 20
-        }],
-        fill: false
-      }]
-    },
+        label: 'Humidity',
+        data: humidityData,
+        yAxisID: 'y-axis-1',
+        borderColor: 'red',
+        backgroundColor: color('red').alpha(0.4).rgbString(),
+        fill: false,
+        pointRadius: 5
+      }, {
+        label: 'Temperature',
+        data: temperatureData,
+        yAxisID: 'y-axis-2',
+        borderColor: 'blue',
+        backgroundColor: color('blue').alpha(0.4).rgbString(),
+        fill: false,
+        pointRadius: 5
+      }]},
     options: {
       title: {
         display: true,
         text: 'Weather Chart',
         fontSize: 30
       },
-      legend: {
-        display: false
-      }
+      scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                  displayFormats: {
+                    quarter: 'hA'
+                  }
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Time',
+                  fontSize: 16
+                }
+            }],
+            yAxes: [{
+              id: 'y-axis-1',
+              scaleLabel: {
+                display: true,
+                labelString: 'Humidity (%)',
+                fontSize: 16
+              }
+            }, {
+              id: 'y-axis-2',
+              position: 'right',
+              scaleLabel: {
+                display: true,
+                labelString: 'Temperature (\xB0C)',
+                fontSize: 16
+              }
+            }]
+        }
     }
   })
 }
@@ -73,15 +123,14 @@ document.getElementById('spectralButton').addEventListener('click', () => {
   var day = document.getElementById('spectralDay').value
   var spectralSelect = document.getElementById('spectralSelect')
 
+  spectralSelect.innerHTML = '<option>Select data</option>'
   var date = year + month + day
   var http = new XMLHttpRequest()
   http.open( 'GET', 'http://localhost:3000/measurement/?date=' + date, false)
   http.send(null)
-  console.log(http.responseText)
   measurementData = JSON.parse(http.responseText)
 
   for (var i = 0; i < measurementData.length; i++) {
-    console.log(measurementData[i].date)
     var item = document.createElement('option')
     var itemText = document.createTextNode(measurementData[i].date)
     item.appendChild(itemText)
@@ -92,7 +141,8 @@ document.getElementById('spectralButton').addEventListener('click', () => {
 
 document.getElementById('spectralSelect').addEventListener('change', () => {
   data = measurementData[document.getElementById('spectralSelect').value]
-  updateSpectralChart(data['violet'], data['blue'], data['green'], data['yellow'], data['orange'], data['red']);
+  console.log(data)
+  updateSpectralChart([data['violet'], data['blue'], data['green'], data['yellow'], data['orange'], data['red']]);
 })
 
 document.getElementById('waterButton').addEventListener('click', () => {
@@ -110,5 +160,20 @@ document.getElementById('weatherButton').addEventListener('click', () => {
   var http = new XMLHttpRequest()
   http.open( 'GET', 'http://localhost:3000/measurement/?date=' + date, false)
   http.send(null)
+  measurementData = JSON.parse(http.responseText)
 
+  var humidityData = []
+  var temperatureData = []
+  for (var i = 0; i < measurementData.length; i++) {
+    var date = measurementData[i].date.toString()
+    humidityData.push({
+      x: new Date(date.substring(0, 4), date.substring(4, 6), date.substring(6, 8), date.substring(8, 10), date.substring(10, 12), date.substring(12)),
+      y: measurementData[i].humidity
+    })
+    temperatureData.push({
+      x: new Date(date.substring(0, 4), date.substring(4, 6), date.substring(6, 8), date.substring(8, 10), date.substring(10, 12), date.substring(12)),
+      y: measurementData[i].temperature
+    })
+  }
+  updateWeatherChart(humidityData, temperatureData)
 })
