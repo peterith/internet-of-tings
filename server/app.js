@@ -10,7 +10,7 @@ const client = mqtt.connect('mqtt://test.mosquitto.org');
 const measurementTopic = 'IC.embedded/internet_of_tings/measurement';
 const waterTopic = 'IC.embedded/internet_of_tings/water';
 
-mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true});
+mongoose.connect('mongodb://Olaf:sudosudo19@ds129625.mlab.com:29625/internet-of-tings', {useNewUrlParser: true});
 
 const db = mongoose.connection;
 db.on('error', () => console.error('MongoDB connection error'));
