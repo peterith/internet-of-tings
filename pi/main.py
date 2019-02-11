@@ -6,15 +6,28 @@ import smbus
 import paho.mqtt.client as mqtt
 import json
 import datetime
+import RIP.GPIO as GPIO
 
-MAX_VALUE = 14000.0
-BAR_WIDTH = 25
+##########
+
+servoPin = 17
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servoPin, GPIO.OUT)
+p = GPIO.PWN(servoPIN, 50)
 
 ##########
 
 client = mqtt.Client()
 client.tls_set(ca_certs="mqtt_encryption/mosquitto.org.crt", certfile="mqtt_encryption/client.crt", keyfile="mqtt_encryption/client.key")
 client.connect("test.mosquitto.org", port=8884)
+client.subscribe("IC.embedded/internet_of_tings/water")
+
+def on_message(client, userdata, msg):
+    p.start(2.5)
+    p.ChangeDutyCycle(5)
+    time.sleep(0.5)
+
+client.on_message = on_message
 
 ##########
 as7262.soft_reset()
@@ -30,13 +43,6 @@ HUMIDITY_INST = 0xF5
 TEMP_INST = 0xF3
 
 bus = smbus.SMBus(1)
-
-##########
-
-try:
-    input = raw_input
-except NameError:
-    pass
 
 ##########
 
@@ -85,10 +91,12 @@ try:
         "temperature": temperature})
 
         print('message', message)
-        
-        client.publish("IC.embedded/internet_of_tings/test", message)
+
+        client.publish("IC.embedded/internet_of_tings/measurement", message)
         time.sleep(5)
 
 except KeyboardInterrupt:
     as7262.set_measurement_mode(3)
     as7262.set_illumination_led(0)
+    p.stop()
+    GPIO.cleanup()
