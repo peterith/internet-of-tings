@@ -10,6 +10,7 @@ const client = mqtt.connect('mqtt://test.mosquitto.org');
 const measurementTopic = 'IC.embedded/internet_of_tings/measurement';
 const waterTopic = 'IC.embedded/internet_of_tings/water';
 
+// MondoDB Setup
 mongoose.connect('mongodb://Olaf:sudosudo19@ds129625.mlab.com:29625/internet-of-tings', {useNewUrlParser: true});
 
 const db = mongoose.connection;
@@ -30,6 +31,7 @@ const measurementSchema = new mongoose.Schema({
 
 const Measurement = mongoose.model('Measurement', measurementSchema);
 
+// MQTT Setup
 client.on('connect', () => {
   client.subscribe(measurementTopic);
   client.subscribe(waterTopic);
@@ -55,8 +57,10 @@ client.on('message', (topic, message) => {
   }
 });
 
+// homepage
 app.use(express.static('public'));
 
+// GET request for retrieving measurements
 app.get('/measurement', (req, res) => {
   var timestamp = req.query.date * 1000000;
   Measurement.find().where('date').gt(timestamp).lt(timestamp + 1000000).exec((err, measurement) => {
@@ -70,9 +74,11 @@ app.get('/measurement', (req, res) => {
   });
 })
 
+// POST request for watering plant
 app.post('/water', (req, res) => {
   client.publish(waterTopic, 'Water now!');
   res.send(null);
 })
 
+// Listening forever
 app.listen(port, () => console.log('Listening on port ' + port));

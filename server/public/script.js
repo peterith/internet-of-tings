@@ -2,6 +2,7 @@
 
 var measurementData = {};
 
+// updates spectral chart
 function updateSpectralChart(data=[]) {
   var ctx = document.getElementById('spectralChart').getContext('2d');
   var gradientStroke = ctx.createLinearGradient(window.outerWidth - 100, 0, 0, 0);
@@ -53,6 +54,7 @@ function updateSpectralChart(data=[]) {
   });
 }
 
+// updates weather chart
 function updateWeatherChart(humidityData={}, temperatureData={}) {
   var color = Chart.helpers.color;
   var ctx = document.getElementById('weatherChart').getContext('2d');
@@ -117,6 +119,7 @@ function updateWeatherChart(humidityData={}, temperatureData={}) {
   });
 }
 
+// Get measurements from server
 document.getElementById('spectralButton').addEventListener('click', () => {
   var year = document.getElementById('spectralYear').value;
   var month = document.getElementById('spectralMonth').value;
@@ -140,17 +143,20 @@ document.getElementById('spectralButton').addEventListener('click', () => {
   }
 });
 
+// Updates spectral chart when data is selected
 document.getElementById('spectralSelect').addEventListener('change', () => {
   data = measurementData[document.getElementById('spectralSelect').value];
   updateSpectralChart([data['violet'], data['blue'], data['green'], data['yellow'], data['orange'], data['red']]);
 });
 
+// Manually waters plant
 document.getElementById('waterButton').addEventListener('click', () => {
   var http = new XMLHttpRequest();
   http.open( 'POST', 'http://localhost:3000/water', false);
   http.send(null);
 });
 
+// Updates weather chart when date is submitted
 document.getElementById('weatherButton').addEventListener('click', () => {
   var year = document.getElementById('weatherYear').value;
   var month = document.getElementById('weatherMonth').value;
