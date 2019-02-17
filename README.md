@@ -8,9 +8,8 @@ Clone the repository into your local directory to get the source code.
 
 ### Prerequisites
 
-You will need the following software installed on your computer:
-* [Python 3](https://www.python.org)
-* [Node Package Manager](https://www.npmjs.com)
+You will need a [Raspberry Pi](https://www.raspberrypi.org) with [Python 3](https://www.python.org) installed.
+You will also need [Node Package Manager](https://www.npmjs.com) installed on your computer.
 
 ### Installing
 
@@ -53,7 +52,7 @@ As the project is part of the Embedded Systems module at Imperial College London
 ## Authors
 
 * **Peerapong Rithisith** - [github.com/peterith](https://github.com/peterith)
-* **Olaf Skorski** - [github.com/os1315](https://github.com/os1315)
+* **Olaf Sikorski** - [github.com/os1315](https://github.com/os1315)
 * **Robert Tan** - [github.com/tanyuzhuo](https://github.com/tanyuzhuo)
 * **Che Zhang** - [github.com/cz3015](https://github.com/cz3015)
 
@@ -62,4 +61,4 @@ As the project is part of the Embedded Systems module at Imperial College London
 * To all of you for visiting my GitHub page
 * [as7262-python](https://github.com/pimoroni/as7262-python) for the AS7262 spectral sensor Python library
 * [Eclipse Mosquitto](https://mosquitto.org) for the message broker
-* Edward Scott for providing us with the knowledge and equipments
+* [Dr Edward Stott](https://www.imperial.ac.uk/people/ed.stott) for providing us with the knowledge and equipments
