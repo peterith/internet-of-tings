@@ -1,6 +1,6 @@
 # Internet of Tings
 
-This repository contains a multi-purpose monitoring system for the agricultural and floral industries. It contains a Raspberry Pi which tracks the freshness of the plants through the [AS7262](https://www.adafruit.com/product/3779) spectral sensor, and the environment of the plants through the [SI7021](https://www.adafruit.com/product/3251) humidity and temperature sensor. The Raspberry Pi is integrated with an automatic watering system; a sprinkler is activated when the data suggests that the plants require watering. The Raspberry Pi communicates with a NodeJS server via a MQTT broker to store the data on a MongoDB cloud database. The server hosts a user interface for real-time visualisation of data from Raspberry Pi and allows the user to manually water plants remotely from anywhere.
+This repository contains a multi-purpose monitoring system for the agricultural and floral industries. It contains a Raspberry Pi which tracks the freshness of the plants through the AS7262 spectral sensor, and the environment of the plants through the SI7021 humidity and temperature sensor. The Raspberry Pi is integrated with an automatic watering system; a sprinkler is activated when the data suggests that the plants require watering. The Raspberry Pi communicates with a NodeJS server via a MQTT broker to store the data on a MongoDB cloud database. The server hosts a user interface for real-time visualisation of data from Raspberry Pi and allows the user to manually water plants remotely from anywhere.
 
 ## Getting Started
 
@@ -8,8 +8,7 @@ Clone the repository into your local directory to get the source code.
 
 ### Prerequisites
 
-You will need a [Raspberry Pi](https://www.raspberrypi.org) with [Python 3](https://www.python.org) installed.
-You will also need [Node Package Manager](https://www.npmjs.com) installed on your computer.
+You will need a [Raspberry Pi](https://www.raspberrypi.org) with [Python 3](https://www.python.org) installed, a [AS7262](https://www.adafruit.com/product/3779) spectral sensor, a [SI7021](https://www.adafruit.com/product/3251) humidity and temperature sensor, and a [SG92R](https://www.adafruit.com/product/169) micro servo which acts as a sprinkler. You will also need [Node Package Manager](https://www.npmjs.com) installed on your computer.
 
 ### Installing
 
@@ -27,7 +26,7 @@ npm install express mongoose mqtt
 
 ## Deployment
 
-From the root folder, access the server folder and run the NodeJS server:
+From the root folder, access the server folder and run the JavaScript server:
 ```
 cd server
 node app.js
@@ -47,7 +46,7 @@ python3 main.py
 
 ## Contributing
 
-As the project is part of the Embedded Systems module at Imperial College London, we are not accepting any external pull requests.
+As the project is part of the Embedded Systems module at Imperial College London, we do not accept external pull requests.
 
 ## Authors
 
